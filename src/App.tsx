@@ -273,7 +273,9 @@ function LineExample() {
               strokeWidth={2}
               dot={false}
             />
-            <ChartLegend content={<ChartLegendContent payload={undefined}/>} />
+            <ChartLegend content={(props) => {
+                return <ChartLegendContent />
+            }} />
           </LineChart>
         </ChartContainer>
       </CardContent>
