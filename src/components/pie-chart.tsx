@@ -1,14 +1,12 @@
 'use client';
 
 import * as React from 'react';
-import { TrendingUp } from 'lucide-react';
 import { Label, Pie, PieChart } from 'recharts';
 
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
@@ -20,15 +18,17 @@ import {
   ChartTooltipContent,
   type ChartConfig,
 } from '@/components/ui/chart';
+import { CustomLegend, CustomTooltip } from './ui/SimpleChart';
+
 
 export const description = 'A donut chart with text';
 
 const chartData = [
-  { browser: 'chrome', visitors: 275, fill: 'var(--color-chrome)' },
-  { browser: 'safari', visitors: 200, fill: 'var(--color-safari)' },
-  { browser: 'firefox', visitors: 287, fill: 'var(--color-firefox)' },
-  { browser: 'edge', visitors: 173, fill: 'var(--color-edge)' },
-  { browser: 'other', visitors: 190, fill: 'var(--color-other)' },
+  { browser: 'chrome', visitors: 275, fill: 'var(--chart-1)' },
+  { browser: 'safari', visitors: 200, fill: 'var(--chart-2)' },
+  { browser: 'firefox', visitors: 287, fill: 'var(--chart-3)' },
+  { browser: 'edge', visitors: 173, fill: 'var(--chart-4)' },
+  { browser: 'other', visitors: 190, fill: 'var(--chart-5)' },
 ];
 
 const chartConfig = {
@@ -76,7 +76,28 @@ export function ChartPieLegend() {
           <PieChart>
             <ChartTooltip
               cursor={false}
-              content={<ChartTooltipContent hideLabel />}
+              content={
+                <CustomTooltip
+                  renderLabel={(label) => {
+                    return <div style={{ fontWeight: 'bold' }}>{label}</div>;
+                  }}
+                  renderItem={(item) => {
+                    return (
+                      <div className="flex gap-2 items-center" key={item.id}>
+                        <div
+                          style={{
+                            backgroundColor: item.color,
+                          }}
+                          className="size-2.5 rounded-full"
+                        ></div>
+                        <div style={{ color: item.color }}>
+                          {item.name}: {item.value}
+                        </div>
+                      </div>
+                    );
+                  }}
+                />
+              }
             />
             <Pie
               data={chartData}
@@ -115,13 +136,27 @@ export function ChartPieLegend() {
                 }}
               />
             </Pie>
+            <ChartLegend
+              content={
+                <CustomLegend
+                  item={({ value, color }) => (
+                    <div key={value} className="flex gap-2 items-center w-full">
+                      <span style={{ color }}>{value}</span>
+                      <div
+                        style={{
+                          backgroundColor: color,
+                          width: 10,
+                          height: 10,
+                          borderRadius: '50%',
+                        }}
+                      ></div>
+                    </div>
+                  )}
+                />
+              }
+              className="-translate-y-2 flex-wrap gap-2 *:basis-1/4 *:justify-center"
+            />
           </PieChart>
-          <ChartLegend
-            content={
-              <ChartLegendContent nameKey="browser" payload={undefined} />
-            }
-            className="-translate-y-2 flex-wrap gap-2 *:basis-1/4 *:justify-center"
-          />
         </ChartContainer>
       </CardContent>
     </Card>

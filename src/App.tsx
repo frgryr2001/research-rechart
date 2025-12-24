@@ -20,6 +20,8 @@ import {
   type ChartConfig,
 } from '@/components/ui/chart';
 import { ChartPieLegend } from './components/pie-chart';
+import { TestComponent } from './components/test';
+import SimpleChart from './components/ui/SimpleChart';
 
 export const description = 'A multiple line chart';
 
@@ -207,11 +209,35 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
+
+
+const data = [
+  {
+    name: 'Page A',
+    uv: 4000,
+    pv: 2400,
+    amt: 2400,
+  },
+  {
+    name: 'Page B',
+    uv: 3000,
+    pv: 1398,
+    amt: 2210,
+  },
+  {
+    name: 'Page C',
+    uv: 2000,
+    pv: 9800,
+    amt: 2290,
+  },
+];
+
 export function ChartLineMultiple() {
   return (
     <div className="flex gap-4 mt-4 mx-auto justify-center">
       <LineExample />
       <ChartPieLegend />
+      <SimpleChart data={data} />
     </div>
   );
 }

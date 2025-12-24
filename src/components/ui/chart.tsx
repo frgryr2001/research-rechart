@@ -271,9 +271,7 @@ function ChartLegendContent(
   if (!payload?.length) {
     return null;
   }
-  console.log('nameKey', nameKey);
 
-  console.log('payload', payload);
 
   return (
     <div
