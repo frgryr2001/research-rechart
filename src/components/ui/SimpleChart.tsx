@@ -1,5 +1,6 @@
 import React from 'react';
 import * as RechartsPrimitive from 'recharts';
+import { ChartTooltip } from '../custom/tooltip-chart';
 
 type CustomTooltipProps = React.ComponentProps<
   typeof RechartsPrimitive.Tooltip
@@ -17,24 +18,20 @@ type CustomLegendProps = Pick<RechartsPrimitive.LegendProps, 'payload'> & {
   item: (props: { value: string; color: string }) => React.ReactNode;
 };
 
-
 export const CustomTooltip: React.FC<CustomTooltipProps> = (props) => {
   const { active, payload, label } = props;
   if (!active || !payload || payload.length === 0) return null;
 
-
-
   return (
-    <div className="bg-white p-10 shadow-md rounded text-xs">
+    <div className="border-border/50 bg-background grid min-w-[8rem] items-start gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs shadow-xl">
       {props.renderLabel ? props.renderLabel(label) : label}
       {payload.map((item) => {
-
         return props.renderItem ? (
           props.renderItem({
             id: item.id as string | number,
             name: item.name as string,
-            value: item.value  as number | string,
-            color: item.color ?? item.payload.fill as string,
+            value: item.value as number | string,
+            color: item.color ?? (item.payload.fill as string),
           })
         ) : (
           <div key={item.id} className="flex justify-between">
@@ -47,7 +44,10 @@ export const CustomTooltip: React.FC<CustomTooltipProps> = (props) => {
   );
 };
 
-export const CustomLegend: React.FC<CustomLegendProps> = ({ payload, item }) => {
+export const CustomLegend: React.FC<CustomLegendProps> = ({
+  payload,
+  item,
+}) => {
   if (!payload || payload.length === 0) return null;
   return (
     <div className="flex justify-center gap-x-4 flex-wrap ">
@@ -76,28 +76,38 @@ const SimpleLineChart: React.FC<{ data: any[] }> = ({ data }) => {
         <RechartsPrimitive.XAxis dataKey="name" />
         <RechartsPrimitive.YAxis />
         <RechartsPrimitive.Tooltip
-          content={
-            <CustomTooltip
-              renderLabel={(label) => {
-                return <div style={{ fontWeight: 'bold' }}>{label}</div>;
-              }}
-              renderItem={(item) => {
-                return (
-                  <div className="flex gap-2 items-center" key={item.id}>
-                    <div
-                      style={{
-                        backgroundColor: item.color,
-                      }}
-                      className="size-2.5 rounded-full"
-                    ></div>
-                    <div style={{ color: item.color }}>
-                     ABC: {item.value}
+          content={(props) => (
+            <ChartTooltip.Root {...props}>
+              <ChartTooltip.Label className="text-yellow-400 border-b border-yellow-400/30 pb-1 mb-2" />
+              <ChartTooltip.Items
+                className="gap-2"
+                // renderItem={(item) => (
+                //   <ChartTooltip.Item className="justify-between">
+                //     <div className="flex items-center gap-2">
+                //       <ChartTooltip.ItemIndicator shape={item.dataKey === "uv" ? "line" : "square"}  />
+                //       <ChartTooltip.ItemName className="text-gray-300" formatter={(name) => name.toUpperCase()} name='123' />
+                //     </div>
+                //     <ChartTooltip.ItemValue className="font-bold" prefix="$" />
+                //   </ChartTooltip.Item>
+                // )}
+                renderItem={
+                  <ChartTooltip.Item className="justify-between">
+                    <div className="flex items-center gap-2">
+                      <ChartTooltip.ItemIndicator
+                        shape={"square"}
+                      />
+                      <ChartTooltip.ItemName
+                        className="text-gray-300"
+                        formatter={(name) => name.toUpperCase()}
+                        name="123"
+                      />
                     </div>
-                  </div>
-                );
-              }}
-            />
-          }
+                    <ChartTooltip.ItemValue className="font-bold" prefix="$" suffix='#' />
+                  </ChartTooltip.Item>
+                }
+              />
+            </ChartTooltip.Root>
+          )}
         />
         <RechartsPrimitive.Legend
           content={
