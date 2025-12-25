@@ -20,7 +20,7 @@ import {
   type ChartConfig,
 } from '@/components/ui/chart';
 import { ChartPieLegend } from './components/pie-chart';
-import { TestComponent } from './components/test';
+
 import SimpleChart from './components/ui/SimpleChart';
 
 export const description = 'A multiple line chart';
