@@ -12,14 +12,12 @@ import {
 } from '@/components/ui/card';
 import {
   ChartContainer,
-  ChartLegend,
-  ChartLegendContent,
-  ChartTooltip,
-  ChartTooltipContent,
+  ChartLegend as ChartLegendPrimitive,
+  ChartTooltip as ChartTooltipPrimitive,
   type ChartConfig,
 } from '@/components/ui/chart';
-import { CustomLegend, CustomTooltip } from './ui/SimpleChart';
-
+import { ChartTooltip } from './custom/tooltip-chart';
+import { ChartLegend } from './custom/legend-chart';
 
 export const description = 'A donut chart with text';
 
@@ -74,30 +72,33 @@ export function ChartPieLegend() {
           className="mx-auto aspect-square max-h-[250px]"
         >
           <PieChart>
-            <ChartTooltip
+            <ChartTooltipPrimitive
               cursor={false}
-              content={
-                <CustomTooltip
-                  renderLabel={(label) => {
-                    return <div style={{ fontWeight: 'bold' }}>{label}</div>;
-                  }}
-                  renderItem={(item) => {
-                    return (
-                      <div className="flex gap-2 items-center" key={item.id}>
-                        <div
-                          style={{
-                            backgroundColor: item.color,
-                          }}
-                          className="size-2.5 rounded-full"
-                        ></div>
-                        <div style={{ color: item.color }}>
-                          {item.name}: {item.value}
+              content={(props) => (
+                <ChartTooltip.Root {...props}>
+                  {/* <ChartTooltip.Label className="text-yellow-400 border-b border-yellow-400/30 pb-1 mb-2" /> */}
+                  <ChartTooltip.Items
+                    className="gap-2"
+                    renderItem={(item) => (
+                      <ChartTooltip.Item key={item.dataKey} className="justify-between">
+                        <div className="flex items-center gap-2">
+                          <ChartTooltip.ItemIndicator
+                            shape={item.dataKey === 'uv' ? 'line' : 'square'}
+                          />
+                          <ChartTooltip.ItemName
+                            className="text-gray-300"
+                            formatter={(name) => name.toUpperCase()}
+                          />
                         </div>
-                      </div>
-                    );
-                  }}
-                />
-              }
+                        <ChartTooltip.ItemValue
+                          className="font-bold"
+                          prefix="$"
+                        />
+                      </ChartTooltip.Item>
+                    )}
+                  />
+                </ChartTooltip.Root>
+              )}
             />
             <Pie
               data={chartData}
@@ -136,24 +137,23 @@ export function ChartPieLegend() {
                 }}
               />
             </Pie>
-            <ChartLegend
-              content={
-                <CustomLegend
-                  item={({ value, color }) => (
-                    <div key={value} className="flex gap-2 items-center w-full">
-                      <span style={{ color }}>{value}</span>
-                      <div
-                        style={{
-                          backgroundColor: color,
-                          width: 10,
-                          height: 10,
-                          borderRadius: '50%',
-                        }}
-                      ></div>
-                    </div>
-                  )}
-                />
-              }
+            <ChartLegendPrimitive
+              content={(props) => (
+                <ChartLegend.Root
+                  payload={props.payload}
+                  className="flex justify-center"
+                >
+                  <ChartLegend.Items
+                    // filter={(item) => item.value !== 'uv'}
+                    renderItem={(item) => (
+                      <ChartLegend.Item item={item}  className="text-sm">
+                        <ChartLegend.ItemIndicator shape="line" />
+                        <ChartLegend.ItemValue />
+                      </ChartLegend.Item>
+                    )}
+                  />
+                </ChartLegend.Root>
+              )}
               className="-translate-y-2 flex-wrap gap-2 *:basis-1/4 *:justify-center"
             />
           </PieChart>

@@ -140,13 +140,14 @@ const ChartTooltipItems: React.FC<ChartTooltipItemsProps> = ({
           dataKey: item.dataKey,
           name: item.name || item.dataKey,
           value: item.value,
-          color: item.color || item.fill || item.stroke || '#8884d8',
+          color: item.color || item.payload.fill || item.stroke || '#8884d8',
           payload: item.payload,
           unit: item.unit,
         };
 
+
         return (
-          <TooltipItemContext.Provider key={index} value={itemData}>
+          <TooltipItemContext.Provider key={item.id} value={itemData}>
             {typeof renderItem === 'function'
               ? renderItem(itemData, index)
               : renderItem || (

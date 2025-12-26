@@ -19,52 +19,8 @@ type CustomLegendProps = Pick<RechartsPrimitive.LegendProps, 'payload'> & {
   item: (props: { value: string; color: string }) => React.ReactNode;
 };
 
-export const CustomTooltip: React.FC<CustomTooltipProps> = (props) => {
-  const { active, payload, label } = props;
-  if (!active || !payload || payload.length === 0) return null;
 
-  return (
-    <div className="border-border/50 bg-background grid min-w-32 items-start gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs shadow-xl">
-      {props.renderLabel ? props.renderLabel(label) : label}
-      {payload.map((item) => {
-        return props.renderItem ? (
-          props.renderItem({
-            id: item.id as string | number,
-            name: item.name as string,
-            value: item.value as number | string,
-            color: item.color ?? (item.payload.fill as string),
-          })
-        ) : (
-          <div key={item.id} className="flex justify-between">
-            <span style={{ color: item.color }}>{item.name}:</span>
-            <span>{item.value}</span>
-          </div>
-        );
-      })}
-    </div>
-  );
-};
 
-export const CustomLegend: React.FC<CustomLegendProps> = ({
-  payload,
-  item,
-}) => {
-  if (!payload || payload.length === 0) return null;
-  return (
-    <div className="flex justify-center gap-x-4 flex-wrap ">
-      {payload.map((entry) => {
-        return (
-          <div key={entry.id} className="flex items-center gap-2">
-            {item({
-              value: entry.value,
-              color: entry.color as string,
-            })}
-          </div>
-        );
-      })}
-    </div>
-  );
-};
 
 // Fixed class name and type issues in `SimpleChart`.
 const SimpleLineChart: React.FC<{ data: any[] }> = ({ data }) => {
@@ -107,7 +63,7 @@ const SimpleLineChart: React.FC<{ data: any[] }> = ({ data }) => {
               <ChartLegend.Items
                 // filter={(item) => item.value !== 'uv'}
                 renderItem={(item) => (
-                  <ChartLegend.Item item={item} className="text-sm">
+                  <ChartLegend.Item key={item.id}  item={item} className="text-sm">
                     <ChartLegend.ItemIndicator shape='line'/>
                     <ChartLegend.ItemValue />
                   </ChartLegend.Item>

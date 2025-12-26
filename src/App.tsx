@@ -235,9 +235,9 @@ const data = [
 export function ChartLineMultiple() {
   return (
     <div className="flex gap-4 mt-4 mx-auto justify-center">
-      <LineExample />
+      {/* <LineExample /> */}
       <ChartPieLegend />
-      <SimpleChart data={data} />
+      {/* <SimpleChart data={data} /> */}
     </div>
   );
 }

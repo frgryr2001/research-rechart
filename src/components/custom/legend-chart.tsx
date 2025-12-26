@@ -1,7 +1,7 @@
-import React, { createContext, useContext, useMemo } from 'react';
+import React, { createContext, Fragment, useContext, useMemo } from 'react';
 import { cn } from '@/lib/utils';
 
-// Context for Legend
+
 interface LegendContextValue {
   payload: any[];
 }
@@ -37,7 +37,6 @@ const ChartLegendRoot: React.FC<ChartLegendProps> = ({
   );
 };
 
-// Legend Items
 interface ChartLegendItemsProps {
   renderItem?: (item: any, index: number) => React.ReactNode;
   className?: string;
@@ -57,16 +56,16 @@ const ChartLegendItems: React.FC<ChartLegendItemsProps> = ({
     <div className={cn('flex flex-wrap gap-2', className)}>
       {filteredPayload.map((item, index) =>
         renderItem ? (
-          renderItem(item, index)
+          <Fragment key={item.value}>{renderItem(item, index)}</Fragment>
         ) : (
-          <ChartLegend.Item key={index} item={item} />
+          <ChartLegend.Item key={item.value} item={item} />
         )
       )}
     </div>
   );
 };
 
-// Individual Legend Item
+
 interface LegendItemContextValue {
   color: string;
   value: string;
@@ -82,7 +81,7 @@ const useLegendItemContext = () => {
   return context;
 };
 
-// Updated Legend Item
+
 interface ChartLegendItemProps {
   item: { color: string; value: string };
   className?: string;
