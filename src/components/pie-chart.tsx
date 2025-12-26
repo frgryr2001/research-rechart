@@ -74,31 +74,37 @@ export function ChartPieLegend() {
           <PieChart>
             <ChartTooltipPrimitive
               cursor={false}
-              content={(props) => (
-                <ChartTooltip.Root {...props}>
-                  {/* <ChartTooltip.Label className="text-yellow-400 border-b border-yellow-400/30 pb-1 mb-2" /> */}
-                  <ChartTooltip.Items
-                    className="gap-2"
-                    renderItem={(item) => (
-                      <ChartTooltip.Item key={item.dataKey} className="justify-between">
-                        <div className="flex items-center gap-2">
-                          <ChartTooltip.ItemIndicator
-                            shape={item.dataKey === 'uv' ? 'line' : 'square'}
+              content={(props) => {
+
+                return (
+                  <ChartTooltip.Root {...props}>
+                    {/* <ChartTooltip.Label className="text-yellow-400 border-b border-yellow-400/30 pb-1 mb-2" /> */}
+                    <ChartTooltip.Items
+                      className="gap-2"
+                      renderItem={(item) => (
+                        <ChartTooltip.Item
+                          key={item.dataKey}
+                          className="justify-between"
+                        >
+                          <div className="flex items-center gap-2">
+                            <ChartTooltip.ItemIndicator
+                              shape={item.dataKey === 'uv' ? 'line' : 'square'}
+                            />
+                            <ChartTooltip.ItemName
+                              className="text-gray-300"
+                              formatter={(name) => name.toUpperCase()}
+                            />
+                          </div>
+                          <ChartTooltip.ItemValue
+                            className="font-bold"
+                            prefix="$"
                           />
-                          <ChartTooltip.ItemName
-                            className="text-gray-300"
-                            formatter={(name) => name.toUpperCase()}
-                          />
-                        </div>
-                        <ChartTooltip.ItemValue
-                          className="font-bold"
-                          prefix="$"
-                        />
-                      </ChartTooltip.Item>
-                    )}
-                  />
-                </ChartTooltip.Root>
-              )}
+                        </ChartTooltip.Item>
+                      )}
+                    />
+                  </ChartTooltip.Root>
+                );
+              }}
             />
             <Pie
               data={chartData}
@@ -146,8 +152,8 @@ export function ChartPieLegend() {
                   <ChartLegend.Items
                     // filter={(item) => item.value !== 'uv'}
                     renderItem={(item) => (
-                      <ChartLegend.Item item={item}  className="text-sm">
-                        <ChartLegend.ItemIndicator shape="line" />
+                      <ChartLegend.Item item={item} className="text-sm">
+                        <ChartLegend.ItemIndicator shape="square" />
                         <ChartLegend.ItemValue />
                       </ChartLegend.Item>
                     )}

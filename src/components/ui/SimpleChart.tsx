@@ -3,6 +3,7 @@ import * as RechartsPrimitive from 'recharts';
 import { ChartLegend } from '../custom/legend-chart';
 import { ChartTooltip } from '../custom/tooltip-chart';
 
+
 type CustomTooltipProps = React.ComponentProps<
   typeof RechartsPrimitive.Tooltip
 > & {
@@ -34,7 +35,8 @@ const SimpleLineChart: React.FC<{ data: any[] }> = ({ data }) => {
         <RechartsPrimitive.XAxis dataKey="name" />
         <RechartsPrimitive.YAxis />
         <RechartsPrimitive.Tooltip
-          content={(props) => (
+          content={(props) => {
+            return (
             <ChartTooltip.Root {...props}>
               <ChartTooltip.Label className="text-yellow-400 border-b border-yellow-400/30 pb-1 mb-2" />
               <ChartTooltip.Items
@@ -55,7 +57,8 @@ const SimpleLineChart: React.FC<{ data: any[] }> = ({ data }) => {
                 )}
               />
             </ChartTooltip.Root>
-          )}
+          )
+          }}
         />
         <RechartsPrimitive.Legend
           content={(props) => (
@@ -63,8 +66,8 @@ const SimpleLineChart: React.FC<{ data: any[] }> = ({ data }) => {
               <ChartLegend.Items
                 // filter={(item) => item.value !== 'uv'}
                 renderItem={(item) => (
-                  <ChartLegend.Item key={item.id}  item={item} className="text-sm">
-                    <ChartLegend.ItemIndicator shape='line'/>
+                  <ChartLegend.Item key={item.id} item={item} className="text-sm">
+                    <ChartLegend.ItemIndicator shape='square'/>
                     <ChartLegend.ItemValue />
                   </ChartLegend.Item>
                 )}

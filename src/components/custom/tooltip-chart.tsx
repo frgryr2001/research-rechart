@@ -2,14 +2,20 @@ import React, {
   createContext,
   useContext,
   useMemo,
-  type ReactElement,
+  type ComponentProps,
 } from 'react';
 import { cn } from '@/lib/utils';
+import { DefaultTooltipContent } from 'recharts';
+
+
+type Payload = Pick<ComponentProps<typeof DefaultTooltipContent> , 'payload'>['payload'];
+type PayloadItem = NonNullable<Payload>[number];
+
 
 interface TooltipContextValue {
   active: boolean;
-  label: any;
-  payload: any[];
+  label?: string;
+  payload?: Payload
 }
 
 const TooltipContext = createContext<TooltipContextValue | null>(null);
@@ -24,8 +30,8 @@ const useTooltipContext = () => {
 
 interface ChartTooltipProps {
   active?: boolean;
-  payload?: any[];
-  label?: any;
+  payload?: Payload;
+  label?: string;
   children: React.ReactNode;
   className?: string;
 }
@@ -37,6 +43,7 @@ const ChartTooltipRoot: React.FC<ChartTooltipProps> = ({
   children,
   className,
 }) => {
+
   if (!active || payload.length === 0) return null;
 
   const contextValue = useMemo(
@@ -59,9 +66,9 @@ const ChartTooltipRoot: React.FC<ChartTooltipProps> = ({
 };
 
 interface ChartTooltipLabelProps {
-  children?: (label: any) => React.ReactNode;
+  children?: (label?: string) => React.ReactNode;
   className?: string;
-  formatter?: (label: any) => string;
+  formatter?: (label?: string) => string;
 }
 
 const ChartTooltipLabel: React.FC<ChartTooltipLabelProps> = ({
@@ -86,16 +93,10 @@ const ChartTooltipLabel: React.FC<ChartTooltipLabelProps> = ({
   );
 };
 
-interface TooltipItemContextValue {
-  dataKey: string;
-  name: string;
-  value: any;
-  color: string;
-  payload: any;
-  unit?: string;
-}
 
-const TooltipItemContext = createContext<TooltipItemContextValue | null>(null);
+type ItemData = Pick<PayloadItem, 'dataKey' | 'name' | 'value' | 'color' | 'payload' | 'unit'>;
+
+const TooltipItemContext = createContext<ItemData | null>(null);
 
 const useTooltipItemContext = () => {
   const context = useContext(TooltipItemContext);
@@ -107,21 +108,15 @@ const useTooltipItemContext = () => {
   return context;
 };
 
-interface ItemData {
-  dataKey: string;
-  name: string;
-  value: any;
-  color: string;
-  payload: any;
-  unit?: string;
-}
+
+
 
 interface ChartTooltipItemsProps {
   renderItem?:
     | React.ReactNode
     | ((item: ItemData, index: number) => React.ReactNode);
   className?: string;
-  filter?: (item: any) => boolean;
+  filter?: (item: ItemData) => boolean;
 }
 
 const ChartTooltipItems: React.FC<ChartTooltipItemsProps> = ({
@@ -131,23 +126,22 @@ const ChartTooltipItems: React.FC<ChartTooltipItemsProps> = ({
 }) => {
   const { payload } = useTooltipContext();
 
-  const filteredPayload = filter ? payload.filter(filter) : payload;
+  const filteredPayload = filter ? payload?.filter(filter) : payload;
 
   return (
     <div className={cn('flex flex-col gap-1', className)}>
-      {filteredPayload.map((item, index) => {
+      {filteredPayload?.map((item, index) => {
         const itemData: ItemData = {
           dataKey: item.dataKey,
           name: item.name || item.dataKey,
           value: item.value,
-          color: item.color || item.payload.fill || item.stroke || '#8884d8',
+          color: item.color || item.payload.fill || item.stroke ,
           payload: item.payload,
           unit: item.unit,
         };
 
-
         return (
-          <TooltipItemContext.Provider key={item.id} value={itemData}>
+          <TooltipItemContext.Provider key={item.dataKey} value={itemData}>
             {typeof renderItem === 'function'
               ? renderItem(itemData, index)
               : renderItem || (
@@ -227,7 +221,8 @@ const ChartTooltipItemName: React.FC<ChartTooltipItemNameProps> = ({
   name,
 }) => {
   const { name: contextName } = useTooltipItemContext();
-  const displayName = formatter ? formatter(name ?? contextName) : name ?? contextName;
+
+  const displayName = formatter ? formatter(name ?? contextName as string) : name ?? contextName;
 
   return (
     <span className={cn('text-muted-foreground', className)}>

@@ -1,9 +1,12 @@
 import React, { createContext, Fragment, useContext, useMemo } from 'react';
 import { cn } from '@/lib/utils';
+import type { LegendProps } from 'recharts';
 
+type PayloadType = LegendProps['payload'];
+type PayloadIItem = NonNullable<PayloadType>[number];
 
 interface LegendContextValue {
-  payload: any[];
+  payload: PayloadType;
 }
 
 const LegendContext = createContext<LegendContextValue | null>(null);
@@ -16,9 +19,8 @@ const useLegendContext = () => {
   return context;
 };
 
-// Root Component
 interface ChartLegendProps {
-  payload?: any[];
+  payload: PayloadType;
   children: React.ReactNode;
   className?: string;
 }
@@ -38,9 +40,9 @@ const ChartLegendRoot: React.FC<ChartLegendProps> = ({
 };
 
 interface ChartLegendItemsProps {
-  renderItem?: (item: any, index: number) => React.ReactNode;
+  renderItem?: (item: PayloadIItem, index: number) => React.ReactNode;
   className?: string;
-  filter?: (item: any) => boolean;
+  filter?: (item: PayloadIItem) => boolean;
 }
 
 const ChartLegendItems: React.FC<ChartLegendItemsProps> = ({
@@ -50,25 +52,29 @@ const ChartLegendItems: React.FC<ChartLegendItemsProps> = ({
 }) => {
   const { payload } = useLegendContext();
 
-  const filteredPayload = filter ? payload.filter(filter) : payload;
+  const filteredPayload = filter ? payload?.filter(filter) : payload;
 
   return (
     <div className={cn('flex flex-wrap gap-2', className)}>
-      {filteredPayload.map((item, index) =>
+      {filteredPayload?.map((item, index) =>
         renderItem ? (
           <Fragment key={item.value}>{renderItem(item, index)}</Fragment>
         ) : (
-          <ChartLegend.Item key={item.value} item={item} />
-        )
+          <ChartLegend.Item
+            key={item.value}
+            item={{
+              value: item.value,
+              color: item.color || '',
+            }}
+          />
+        ),
       )}
     </div>
   );
 };
 
-
 interface LegendItemContextValue {
-  color: string;
-  value: string;
+  item: PayloadIItem;
 }
 
 const LegendItemContext = createContext<LegendItemContextValue | null>(null);
@@ -76,14 +82,15 @@ const LegendItemContext = createContext<LegendItemContextValue | null>(null);
 const useLegendItemContext = () => {
   const context = useContext(LegendItemContext);
   if (!context) {
-    throw new Error('LegendItem components must be used within ChartLegendItem');
+    throw new Error(
+      'LegendItem components must be used within ChartLegendItem',
+    );
   }
   return context;
 };
 
-
 interface ChartLegendItemProps {
-  item: { color: string; value: string };
+  item: PayloadIItem;
   className?: string;
   children?: React.ReactNode;
 }
@@ -93,10 +100,7 @@ const ChartLegendItem: React.FC<ChartLegendItemProps> = ({
   className,
   children,
 }) => {
-  const contextValue = useMemo(
-    () => ({ color: item.color, value: item.value }),
-    [item]
-  );
+  const contextValue = useMemo(() => ({ item }), [item]);
 
   return (
     <LegendItemContext.Provider value={contextValue}>
@@ -106,17 +110,16 @@ const ChartLegendItem: React.FC<ChartLegendItemProps> = ({
 };
 
 type ChartLegendItemIndicatorProps = {
-    className?: string;
-    shape?: 'circle' | 'square' | 'line';
+  className?: string;
+  shape?: 'circle' | 'square' | 'line';
 };
 const ChartLegendItemIndicator: React.FC<ChartLegendItemIndicatorProps> = ({
   className,
   shape = 'circle',
 }) => {
-  const { color } = useLegendItemContext();
+  const { item } = useLegendItemContext();
 
-
- const shapeClasses = {
+  const shapeClasses = {
     circle: 'rounded-full',
     square: 'rounded-sm',
     line: 'rounded-full h-0.5',
@@ -125,17 +128,20 @@ const ChartLegendItemIndicator: React.FC<ChartLegendItemIndicatorProps> = ({
   return (
     <div
       className={cn('size-4', shapeClasses[shape], className)}
-      style={{ backgroundColor: color }}
+      style={{ backgroundColor: item.color }}
     ></div>
   );
 };
 
 type ChartLegendItemValueProps = {
-    className?: string;
-    value?: string;
+  className?: string;
+  value?: string;
 };
-const ChartLegendItemValue: React.FC<ChartLegendItemValueProps> = ({ className, value }) => {
-  const { value : contextValue } = useLegendItemContext();
+const ChartLegendItemValue: React.FC<ChartLegendItemValueProps> = ({
+  className,
+  value,
+}) => {
+  const { item : { value: contextValue } } = useLegendItemContext();
   const finalValue = value ?? contextValue;
 
   return <span className={cn(className)}>{finalValue}</span>;

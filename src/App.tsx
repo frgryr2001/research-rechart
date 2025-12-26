@@ -237,7 +237,7 @@ export function ChartLineMultiple() {
     <div className="flex gap-4 mt-4 mx-auto justify-center">
       {/* <LineExample /> */}
       <ChartPieLegend />
-      {/* <SimpleChart data={data} /> */}
+      <SimpleChart data={data} />
     </div>
   );
 }
